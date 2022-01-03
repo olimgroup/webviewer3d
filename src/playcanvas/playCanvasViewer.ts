@@ -56,7 +56,7 @@ export class PlayCanvasViewer implements IViewer {
 
         this._rootScript = this._app.root.addComponent("script") as pc.ScriptComponent;
 
-        this._gltfRoot = this._rootScript.create(GLTFRoot, {}) as GLTFRoot;
+        this._gltfRoot = this._rootScript.create(GLTFRoot, {}) as GLTFRoot;        
         this._gltfRoot.load();
 
         this._app.start();

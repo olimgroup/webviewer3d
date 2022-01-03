@@ -75,16 +75,16 @@ export class LightMapExtensionParser implements ExtensionParser {
       }
       
       
-      const sc = data.node.addComponent("script");//.addComponent("script") as pc.ScriptComponent;
-      // sc.create(NodeLightmap, {
-      //   attributes: {
-      //     texture,
-      //     texCoord: texCoord ?? 0,
-      //     lightmapAdd,
-      //     lightmapScale,
-      //     coordinateScaleBias,
-      //   },
-      // });
+      const sc = data.node.addComponent("script") as pc.ScriptComponent;
+      sc.create(NodeLightmap, {
+        attributes: {
+          texture,
+          texCoord: texCoord ?? 0,
+          lightmapAdd,
+          lightmapScale,
+          coordinateScaleBias,
+        },
+      });
 
       // TODO: cleanup of created resources when the scene or model is changed?
     });
