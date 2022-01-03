@@ -1,11 +1,15 @@
 
-import * as pc from "playcanvas";
-
-const gltfRootScriptName = "NodeLightMap";
+import * as pc from "@animech-public/playcanvas";
 
 class GLTFRoot extends pc.ScriptType {    
     _box? : pc.Entity;
     _camera? : pc.Entity;
+    _light?: pc.Entity;
+
+    public constructor(args: { app: pc.Application; entity: pc.Entity }) {
+        super(args);
+    }
+
     public load() {
 
         this._camera = new pc.Entity('camera');
@@ -14,17 +18,13 @@ class GLTFRoot extends pc.ScriptType {
         this._camera.setLocalEulerAngles(-45, 0, 0);
         this.entity.addChild(this._camera);
         
-        const light = new pc.Entity('light');
-        light.addComponent('light');
-        light.setEulerAngles(0, 0, 0);
-        this.entity.addChild(light);
+        this._light = new pc.Entity('light');
+        this._light.addComponent('light');
+        this._light.setEulerAngles(0, 0, 0);
+        this.entity.addChild(this._light);
 
         this._box = new pc.Entity('cube');
         this._box.addComponent('model', { type: 'box' });
-        const sm = this._box.model?.material as pc.StandardMaterial;
-        sm.diffuse.g = 0.0;
-        sm.diffuse.b = 0.0;
-        sm.update();
         
         this.entity.addChild(this._box);
     }
@@ -32,8 +32,7 @@ class GLTFRoot extends pc.ScriptType {
     
     public update(dt:number) {
         this._box?.rotate(dt * 10, dt * 20, dt * 30);
-        //this._camera?.rotate(0, 0, 0);
     }
-};
+}
 
-export { gltfRootScriptName, GLTFRoot };
+export { GLTFRoot };
