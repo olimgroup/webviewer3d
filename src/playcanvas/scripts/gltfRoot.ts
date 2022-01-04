@@ -24,21 +24,21 @@ class GLTFRoot extends pc.ScriptType {
         this.entity.addChild(this._camera);
         
         
-        this._camera.setLocalPosition(-3, 1.5, 2);
-        this._light = new pc.Entity('light');
-        const lc = this._light.addComponent('light') as pc.LightComponent;
-        lc.layers = [1, 2, 3];
-        //lc.layers.push(999);
-        this._light.setEulerAngles(0, 0, 0);
-        this.entity.addChild(this._light);
+        // this._camera.setLocalPosition(-3, 1.5, 2);
+        // this._light = new pc.Entity('light');
+        // const lc = this._light.addComponent('light') as pc.LightComponent;
+        // lc.layers = [1, 2, 3];
+        // //lc.layers.push(999);
+        // this._light.setEulerAngles(0, 0, 0);
+        // this.entity.addChild(this._light);
 
-        this._box = new pc.Entity('cube');
+        // this._box = new pc.Entity('cube');
         
-        const mc = this._box.addComponent('model', { type: 'box' }) as pc.ModelComponent;
-        mc.castShadows = true;
-        mc.layers = [1, 2, 3];
+        // const mc = this._box.addComponent('model', { type: 'box' }) as pc.ModelComponent;
+        // mc.castShadows = true;
+        // mc.layers = [1, 2, 3];
         
-        this.entity.addChild(this._box);
+        // this.entity.addChild(this._box);
     }
 
     

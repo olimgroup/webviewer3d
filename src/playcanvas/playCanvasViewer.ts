@@ -58,7 +58,8 @@ export class PlayCanvasViewer implements IViewer {
 
         this._gltfRoot = this._rootScript.create(GLTFRoot, {}) as GLTFRoot;        
         this._gltfRoot.load();
-
+        this.loadGltf("../../assets/ZE152_01_A22/ZE152_01_A2.gltf", "ZE152_01_A2.gltf");
+        this.loadGltf("../../assets/couch/couch.gltf", "couch.gltf");
         this._app.start();
     }
 
@@ -79,16 +80,17 @@ export class PlayCanvasViewer implements IViewer {
 
     private async _setSceneHierarchy(gltfScene: GltfSceneData) {
 
-        if (this._activeGltfScene) {
-            this._app.root.removeChild(this._activeGltfScene.root);
-        }
-        this._activeGltfScene = gltfScene;
-        this._app.root.addChild(gltfScene.root);
+        // if (this._activeGltfScene) {
+        //     this._app.root.removeChild(this._activeGltfScene.root);
+        // }
+        // this._activeGltfScene = gltfScene;
+        this._gltfRoot?.entity.addChild(gltfScene.root);
     }
     public async loadGltf(url: string, fileName?: string) {
-        this.destroyGltf();
+        //this.destroyGltf();
         try {
-            this._gltf = await this._loader.load(url, fileName);
+            const loader = new PlayCanvasGltfLoader(this._app);
+            this._gltf = await loader.load(url, fileName);
             await this._setSceneHierarchy(this._gltf.scenes[this._gltf.defaultScene]);
             this._gltfLoaded = true;
         } catch (e) {

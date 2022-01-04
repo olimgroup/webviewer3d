@@ -50,9 +50,9 @@ export const App =  observer(() => {
 
     const viewer = new PlayCanvasViewer(canvasRef.current);
     viewer.Initialize();
-    runAsync(async () => {
-      await viewer.loadGltf("../../assets/ZE152_01_A22/ZE152_01_A2.gltf", "ZE152_01_A2.gltf");
-    });
+    // runAsync(async () => {
+      
+    // });
   }, []);
   return (
     <div>
