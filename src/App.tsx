@@ -37,6 +37,8 @@ export type ViewerProps = {
 };
 export const App =  observer(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const buttonRef = useRef<HTMLInputElement>(null);
   const [
     localIsLoading,
     hasLoadError,
@@ -47,15 +49,26 @@ export const App =  observer(() => {
     if (!canvasRef.current) {
       return;
     }
+    if (!inputRef.current) {
+      return;
+    }
+    if (!buttonRef.current) {
+      return;
+    }
 
     const viewer = new PlayCanvasViewer(canvasRef.current);
     viewer.Initialize();
+    viewer.setInputElement(inputRef.current);
+    viewer.setButtonElement(buttonRef.current);
+    
     // runAsync(async () => {
       
     // });
   }, []);
   return (
     <div>
+      <input ref={inputRef} type="text" />
+      <input ref={buttonRef} type="button" value="send"/>
       <canvas ref={canvasRef} />
     </div>
   );

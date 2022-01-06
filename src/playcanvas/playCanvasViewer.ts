@@ -33,20 +33,52 @@ export class PlayCanvasViewer implements IViewer {
     private _color: pc.Color;
     private _chracters: Map<string, Character>;
 
+    private _text!: HTMLInputElement;
+
     constructor(public canvas: HTMLCanvasElement) {
 
         this._idd = Math.random().toString(36).slice(2);
         this._color = new pc.Color(Math.random(), Math.random(), Math.random(), 1);
         this._app = this._createApp(canvas);
         this._loader = new PlayCanvasGltfLoader(this._app);
-        this._WebSocket = new WebSocket("ws://localhost:3001");
+        this._WebSocket = new WebSocket("ws://192.168.1.102:3001");
         this._app.mouse.on(pc.EVENT_MOUSEUP, this._onMouseUp, this);
         this._WebSocket.onmessage = (event) => {
             const obj = JSON.parse(event.data.toString());
             this.OnMessage(obj);
         };
         this._chracters = new Map<string, Character>();
+
+        this.app.assets.loadFromUrl("../../assets/NotoSansKR-Medium/NotoSansKR-Medium.json", "font", (err, asset) => {
+            if (asset) {
+                asset.name = "notosans";
+                this.app.assets.add(asset);
+                const font = asset.resource as pc.Font;
+                console.log(asset.id);
+            }
+        });
+
+
+
     }
+
+    setInputElement(input: HTMLInputElement) {
+        this._text = input;
+    }
+    setButtonElement(input: HTMLInputElement) {
+        input.onclick = (ev) => {
+            const s = this._text.value as string;
+            const msg = {
+                type: "chat",
+                id: this._idd,
+                msg: s
+            }
+            const str = JSON.stringify(msg);
+            this._WebSocket.send(str);
+            this._text.value = "";
+        };
+    }
+
     private OnMessage(obj: any) {
 
         if (obj.type == "new people") {
@@ -90,6 +122,12 @@ export class PlayCanvasViewer implements IViewer {
         if (obj.type == "move to") {
             if (this._chracters.has(obj.id)) {
                 this._chracters.get(obj.id)?._control?.moveTo(new pc.Vec3(obj.position));
+            }
+        }
+
+        if (obj.type == "chat") {
+            if (this._chracters.has(obj.id)) {
+                this._chracters.get(obj.id)?._control?.chat(obj.msg);
             }
         }
     }

@@ -30,11 +30,11 @@ export class FlyCamera extends pc.ScriptType {
   public fastSpeed = 5;
   public mouseSensitivity = 10;
 
-  private _mode = FlyCameraMode.Lock;
+  private _mode = FlyCameraMode.Drag;
   private _moved = false;
   private _lmbDown = false;
-  private _ex = 0;
-  private _ey = 0;
+  private _ex = -90;
+  private _ey = 180;
   private _cameraComponent!: pc.CameraComponent;
   private _initialized = false;
   private _focusEntity: pc.Entity | null = null;
