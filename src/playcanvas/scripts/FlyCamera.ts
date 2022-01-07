@@ -39,6 +39,8 @@ export class FlyCamera extends pc.ScriptType {
   private _initialized = false;
   private _focusEntity: pc.Entity | null = null;
 
+  public isActive = true;
+
   public constructor(args: { app: pc.Application; entity: pc.Entity }) {
     super(args);
   }
@@ -101,6 +103,8 @@ export class FlyCamera extends pc.ScriptType {
   }
 
   public update(dt: number) {
+    if (this.isActive == false)
+      return;
     // Update the camera's orientation
     this.entity.setLocalEulerAngles(this._ex, this._ey, 0);
 

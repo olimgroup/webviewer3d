@@ -138,8 +138,8 @@ export class Character extends pc.Entity {
       text: this._id,
       width: 200,
       height: 100,
-      autoWidth: false,
-      autoHeight: false,
+      autoWidth: true,
+      autoHeight: true,
       wrapLines: true,
       enableMarkup: true,
       type: pc.ELEMENTTYPE_TEXT

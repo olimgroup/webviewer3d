@@ -28,6 +28,12 @@ class GLTFRoot extends pc.ScriptType {
         this.entity.addChild(this._light);
         const lc = this._light.addComponent('light') as pc.LightComponent;
         lc.layers = [1, 2, 3];
+
+        this._light = new pc.Entity('light');
+        this._light.setEulerAngles(180, 0, 0);
+        this.entity.addChild(this._light);
+        const lc2 = this._light.addComponent('light') as pc.LightComponent;
+        lc2.layers = [1, 2, 3];
     }
 
 
