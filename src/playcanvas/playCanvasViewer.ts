@@ -28,7 +28,7 @@ export class PlayCanvasViewer implements IViewer {
     private _gltfLoaded = false;
     private _gltf?: GltfData;
 
-    private _WebSocket: WebSocket;
+    private _WebSocket?: WebSocket;
     private _idd: string;
     private _color: pc.Color;
     private _chracters: Map<string, Character>;
@@ -44,13 +44,10 @@ export class PlayCanvasViewer implements IViewer {
         this._color = new pc.Color(Math.random(), Math.random(), Math.random(), 1);
         this._app = this._createApp(canvas);
         this._loader = new PlayCanvasGltfLoader(this._app);
-        this._WebSocket = new WebSocket("ws://192.168.1.102:3001");
+
         this._app.mouse.on(pc.EVENT_MOUSEUP, this._onMouseUp, this);
         this._app.keyboard.on(pc.EVENT_KEYDOWN, this._onKeyUp, this);
-        this._WebSocket.onmessage = (event) => {
-            const obj = JSON.parse(event.data.toString());
-            this.OnMessage(obj);
-        };
+
         this._chracters = new Map<string, Character>();
 
         this.app.assets.loadFromUrl("../../assets/NotoSansKR-Medium/NotoSansKR-Medium.json", "font", (err, asset) => {
@@ -98,7 +95,7 @@ export class PlayCanvasViewer implements IViewer {
             msg.status.position[2] = pos.z;
 
             const str = JSON.stringify(msg);
-            this._WebSocket.send(str);
+            this._WebSocket?.send(str);
         }
 
         if (obj.type == "introduce") {
@@ -138,7 +135,7 @@ export class PlayCanvasViewer implements IViewer {
                     msg: s
                 }
                 const str = JSON.stringify(msg);
-                this._WebSocket.send(str);
+                this._WebSocket?.send(str);
                 this._text.value = "";
                 this._text.hidden = true;
                 this.canvas.focus();
@@ -170,7 +167,7 @@ export class PlayCanvasViewer implements IViewer {
                 position: [Result.x, Result.y, Result.z]
             }
             const str = JSON.stringify(msg);
-            this._WebSocket.send(str);
+            this._WebSocket?.send(str);
         }
     }
     public get rootScript() {
@@ -214,8 +211,17 @@ export class PlayCanvasViewer implements IViewer {
 
         this._gltfRoot = this._rootScript.create(GLTFRoot, {}) as GLTFRoot;
         this._gltfRoot.load();
-        this.loadGltf("../../assets/ZE152_01_A22/ZE152_01_A2.gltf", "ZE152_01_A2.gltf");
         this._app.start();
+
+
+
+        this._WebSocket = new WebSocket("ws://192.168.1.102:3001");
+        this._WebSocket.onmessage = (event) => {
+            const obj = JSON.parse(event.data.toString());
+            this.OnMessage(obj);
+        };
+
+        this.loadGltf("../../assets/ZE152_01_A22/ZE152_01_A2.gltf", "ZE152_01_A2.gltf");
     }
 
     public destroyGltf() {
