@@ -1,5 +1,5 @@
 import * as pc from "@animech-public/playcanvas";
-import { GLTFRoot } from "./GltfRoot";
+import { GLTFRoot } from "./gltfRoot";
 
 
 export class CharacterComponent extends pc.ScriptType {

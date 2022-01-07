@@ -1,7 +1,7 @@
 
 import * as pc from "@animech-public/playcanvas";
-import { GLTFRoot } from "./scripts/GltfRoot"
-import { PlayCanvasGltfLoader, GltfData, GltfSceneData, } from "./PlayCanvasGltfLoader"
+import { GLTFRoot } from "./scripts/gltfRoot"
+import { PlayCanvasGltfLoader, GltfData, GltfSceneData, } from "./playCanvasGltfLoader"
 import { Character } from "./scripts/Character";
 export type PreventableEvent<TEvent extends Event = Event> = TEvent & {
     prevent: boolean;
@@ -214,7 +214,7 @@ export class PlayCanvasViewer implements IViewer {
 
         this._gltfRoot = this._rootScript.create(GLTFRoot, {}) as GLTFRoot;
         this._gltfRoot.load();
-        //this.loadGltf("../../assets/ZE152_01_A22/ZE152_01_A2.gltf", "ZE152_01_A2.gltf");
+        this.loadGltf("../../assets/ZE152_01_A22/ZE152_01_A2.gltf", "ZE152_01_A2.gltf");
         this._app.start();
     }
 

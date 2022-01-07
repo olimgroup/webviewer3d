@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { observer } from "mobx-react-lite";
-import { PlayCanvasViewer } from './playcanvas/PlayCanvasViewer';
+import { PlayCanvasViewer } from './playcanvas/playCanvasViewer';
 
 export type ViewerProps = {
   isLoading?: boolean;
