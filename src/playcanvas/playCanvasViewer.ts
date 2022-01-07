@@ -38,6 +38,8 @@ export class PlayCanvasViewer implements IViewer {
     private _div!: HTMLDivElement;
     private _isChatActive: boolean;
 
+    private _gltfSceneRoot!: pc.Entity;
+
     constructor(public rootDiv: HTMLDivElement, public canvas: HTMLCanvasElement) {
         this._div = rootDiv;
         this._idd = Math.random().toString(36).slice(2);
@@ -150,6 +152,10 @@ export class PlayCanvasViewer implements IViewer {
                     this._gltfRoot._flyCamera.isActive = false;
             }
         }
+
+        if (event.key == pc.KEY_ESCAPE) {
+            this._gltfSceneRoot.enabled = !this._gltfSceneRoot.enabled;
+        }
     }
     private _onMouseUp(event: pc.MouseEvent) {
         if (event.button === pc.MOUSEBUTTON_RIGHT) {
@@ -244,7 +250,10 @@ export class PlayCanvasViewer implements IViewer {
         //     this._app.root.removeChild(this._activeGltfScene.root);
         // }
         // this._activeGltfScene = gltfScene;
-        this._gltfRoot?.entity.addChild(gltfScene.root);
+        this._gltfSceneRoot = gltfScene.root;
+
+        this._app.root.addChild(this._gltfSceneRoot);
+        console.log();
     }
     public async loadGltf(url: string, fileName?: string) {
         //this.destroyGltf();

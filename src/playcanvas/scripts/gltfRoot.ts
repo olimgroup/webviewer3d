@@ -5,7 +5,8 @@ class GLTFRoot extends pc.ScriptType {
     public _box?: pc.Entity;
     public _camera?: pc.Entity;
     public _flyCamera?: FlyCamera;
-    public _light?: pc.Entity;
+    public _light0?: pc.Entity;
+    public _light1?: pc.Entity;
 
     public constructor(args: { app: pc.Application; entity: pc.Entity }) {
         super(args);
@@ -23,16 +24,16 @@ class GLTFRoot extends pc.ScriptType {
         this._flyCamera.mouseSensitivity = 10;
         this.entity.addChild(this._camera);
 
-        this._light = new pc.Entity('light');
-        this._light.setEulerAngles(0, 0, 0);
-        this.entity.addChild(this._light);
-        const lc = this._light.addComponent('light') as pc.LightComponent;
+        this._light0 = new pc.Entity('light');
+        this._light0.setEulerAngles(0, 0, 0);
+        this.entity.addChild(this._light0);
+        const lc = this._light0.addComponent('light') as pc.LightComponent;
         lc.layers = [1, 2, 3];
 
-        this._light = new pc.Entity('light');
-        this._light.setEulerAngles(180, 0, 0);
-        this.entity.addChild(this._light);
-        const lc2 = this._light.addComponent('light') as pc.LightComponent;
+        this._light1 = new pc.Entity('light');
+        this._light1.setEulerAngles(180, 0, 0);
+        this.entity.addChild(this._light1);
+        const lc2 = this._light1.addComponent('light') as pc.LightComponent;
         lc2.layers = [1, 2, 3];
     }
 
