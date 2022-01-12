@@ -1,8 +1,9 @@
 
 import * as pc from "playcanvas";
-import { GLTFRoot, gltfRootScriptName } from "./scripts/gltfRoot"
-
-export class PlayCanvasViewer implements IViewer {
+import { Root } from "./scripts/Root"
+import { PlayCanvasGltfLoader } from "./playCanvasGltfLoader"
+import { CustomGltfLoader } from "../core/customGltfLoader"
+export class PlayCanvasViewer {
 
     constructor(public canvas: HTMLCanvasElement) {
         this._app = this._createApp(canvas);
@@ -13,14 +14,16 @@ export class PlayCanvasViewer implements IViewer {
         return this._app;
     }
 
-    private _initiated = false;
-    public get initiated(): boolean {
-        return !!this._app.graphicsDevice && this._initiated;
+    private _gltfLoader?: PlayCanvasGltfLoader;
+    public get gltfLoader(): PlayCanvasGltfLoader {
+        if (this._gltfLoader == null)
+            this._gltfLoader = new PlayCanvasGltfLoader(this.app);
+        return this._gltfLoader;
     }
 
     private _createApp(canvas: HTMLCanvasElement) {
+
         const app = new pc.Application(canvas, {
-            assetPrefix: "viewer/playcanvas/",
             mouse: new pc.Mouse(document.body),
             keyboard: new pc.Keyboard(window),
             graphicsDeviceOptions: {
@@ -31,20 +34,32 @@ export class PlayCanvasViewer implements IViewer {
                 use3dPhysics: false,
             }
         });
-        window.addEventListener('resize', (event : Event) => {
+        app.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
+        app.setCanvasResolution(pc.RESOLUTION_AUTO);
+        window.addEventListener('resize', (event: Event) => {
             this._app.resizeCanvas();
         });
         return app;
     }
 
     public Initialize() {
-        this._app.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
-        this._app.setCanvasResolution(pc.RESOLUTION_AUTO);
-
         const scriptComponent = this._app.root.addComponent("script") as pc.ScriptComponent;
-        const gltfRoot = scriptComponent.create(GLTFRoot, {}) as GLTFRoot;
-        gltfRoot.load();
-        
+        scriptComponent.create(Root, {});
+        this._app.loader.addHandler("customGltfLoader", new CustomGltfLoader);
         this._app.start();
+    }
+
+
+    public async loadGltf(url: string, fileName?: string) {
+        try {
+            const gltf = await this.gltfLoader.load(url, fileName);
+            if (gltf.scenes.length != 0) {
+                console.log(gltf.scenes);
+                this.app.root.addChild(gltf.scenes[0]);
+            }
+        } catch (e) {
+            console.log(e);
+            throw e;
+        }
     }
 }

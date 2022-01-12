@@ -10,6 +10,8 @@ function App() {
     }
     const viewer = new PlayCanvasViewer(canvasRef.current);
     viewer.Initialize();
+    viewer.loadGltf("../../assets/couch/couch.gltf", "couch.gltf");
+    
   }, []);
 
   return (
