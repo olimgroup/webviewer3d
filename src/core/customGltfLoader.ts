@@ -11,18 +11,11 @@ import {
 } from "./gltfConverter";
 
 export class GlbContainerAssets {
-  public options: any;
-  public gltf: any;
-  public graphicsDevice: pc.GraphicsDevice;
-  public bufferViews: Uint8Array[];
-  public nodes: pc.Entity[] = [];
-  public scenes: pc.Entity[] = [];
-  public cameras: pc.CameraComponent[] = [];
-  public lights: pc.LightComponent[] = [];
-  public materials: pc.Asset[] = [];
-  public textures: pc.Asset[] = [];
-  public models: pc.Asset[] = [];
-  public registry?: pc.AssetRegistry;
+  private options: any;
+  private gltf: any;
+  private textures: pc.Asset[] = [];
+  private graphicsDevice: pc.GraphicsDevice;
+  private bufferViews: Uint8Array[];
 
   constructor(gltf: any, options: any, textureAssets: pc.Asset[], graphicsDevice: pc.GraphicsDevice, bufferViews: Uint8Array[]) {
     this.options = options;
@@ -41,12 +34,10 @@ export class GlbContainerAssets {
     const modelByNode = createModelByNode(this.gltf, models, null, null);
     return {
       gltf: this.gltf,
-      nodes: nodes,
       scenes: scenes,
+      nodes: nodes,
       materials: materials,
-      models: models,
       modelByNode: modelByNode,
-      textures: this.textures
     }
   }
 }
