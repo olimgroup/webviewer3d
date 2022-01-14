@@ -45,17 +45,15 @@ export class PlayCanvasViewer {
     public Initialize() {
         const scriptComponent = this._app.root.addComponent("script") as pc.ScriptComponent;
         scriptComponent.create(Root, {});
-        this._app.loader.addHandler("customGltfLoader", new CustomGltfLoader);
-        this._app.start();
+        this.app.loader.addHandler("customGltfLoader", new CustomGltfLoader);
+        this.app.start();
     }
-
 
     public async loadGltf(url: string, fileName?: string) {
         try {
             const gltf = await this.gltfLoader.load(url, fileName);
             if (gltf.scenes.length != 0) {
-                console.log(gltf.scenes);
-                this.app.root.addChild(gltf.scenes[0]);
+                this.app.root.addChild(gltf.scenes[gltf.defaultScene]);
             }
         } catch (e) {
             console.log(e);

@@ -28,8 +28,8 @@ class Root extends pc.ScriptType {
         const entity = new pc.Entity('camera');
         const component = entity.addComponent('camera') as pc.CameraComponent;
         component.clearColor = new pc.Color(0.12, 0.11, 0.15);
-        component.entity.setPosition(0, 0, 10);
-        component.entity.setLocalEulerAngles(0, 0, 0);
+        component.entity.setPosition(0, 5, 10);
+        component.entity.setLocalEulerAngles(-35, 0, 0);
         return component;
     }
 

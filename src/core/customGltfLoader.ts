@@ -4,34 +4,50 @@ import * as pc from "playcanvas";
 import {
   createNodes,
   createScenes,
-  createCameras,
-  createLights,
-  createMaterials
+  createMaterials,
+  createMeshes,
+  createModels,
+  createModelByNode,
 } from "./gltfConverter";
 
 export class GlbContainerAssets {
-  private options: any;
-  private gltf: any;
+  public options: any;
+  public gltf: any;
+  public graphicsDevice: pc.GraphicsDevice;
+  public bufferViews: Uint8Array[];
   public nodes: pc.Entity[] = [];
   public scenes: pc.Entity[] = [];
   public cameras: pc.CameraComponent[] = [];
   public lights: pc.LightComponent[] = [];
   public materials: pc.Asset[] = [];
   public textures: pc.Asset[] = [];
+  public models: pc.Asset[] = [];
+  public registry?: pc.AssetRegistry;
 
-  constructor(gltf: any, options: any, textureAssets: pc.Asset[]) {
+  constructor(gltf: any, options: any, textureAssets: pc.Asset[], graphicsDevice: pc.GraphicsDevice, bufferViews: Uint8Array[]) {
     this.options = options;
     this.gltf = gltf;
     this.textures = textureAssets;
+    this.graphicsDevice = graphicsDevice;
+    this.bufferViews = bufferViews;
   }
+
   public generate() {
-    this.nodes = createNodes(this.gltf, this.options);
-    this.scenes = createScenes(this.gltf, this.nodes, this.options);
-    this.cameras = createCameras(this.gltf, this.nodes, this.options);
-    this.lights = createLights(this.gltf, this.nodes, this.options);
-    this.materials = createMaterials(this.gltf, this.textures.map((asset) => {
-      return asset.resource;
-    }), this.options, true);
+    const nodes = createNodes(this.gltf, this.options);
+    const scenes = createScenes(this.gltf, nodes, this.options);
+    const meshes = createMeshes(this.graphicsDevice, this.gltf, this.bufferViews, false);
+    const materials = createMaterials(this.gltf, this.textures.map(asset => { return asset.resource; }), this.options, true)
+    const models = createModels(meshes, materials, materials[0]);
+    const modelByNode = createModelByNode(this.gltf, models, null, null);
+    return {
+      gltf: this.gltf,
+      nodes: nodes,
+      scenes: scenes,
+      materials: materials,
+      models: models,
+      modelByNode: modelByNode,
+      textures: this.textures
+    }
   }
 }
 
@@ -520,8 +536,7 @@ export class CustomGltfLoader implements pc.ResourceHandler {
     }
     var disableFlipV = gltf.asset && gltf.asset.generator === 'PlayCanvas';
 
-    var result = new GlbContainerAssets(gltf, options, textureAssets);
-    result.generate();
+    var result = new GlbContainerAssets(gltf, options, textureAssets, CustomGltfLoader.app.graphicsDevice, bufferViews);
     if (postprocess) {
       postprocess(gltf, result);
     }
@@ -576,8 +591,36 @@ export class CustomGltfLoader implements pc.ResourceHandler {
   }
 
   open(url: string, data: any, asset?: pc.Asset): any {
-    return data;
+    return data.generate();
   }
   patch(asset: pc.Asset, assets: pc.AssetRegistry): void {
+    var container = asset.resource;
+    var data = container.gltf;
+    if (data) {
+      var createAsset = function (type: any, resource: any, index: number) {
+        var subAsset = new pc.Asset(asset.name + '/' + type + '/' + index, type, {
+          url: ''
+        });
+        subAsset.resource = resource;
+        subAsset.loaded = true;
+        assets.add(subAsset);
+        return subAsset;
+      };
+      var modelAssetByNode = container.modelByNode.map(function (model: any, index: number) {
+        return model !== null ? createAsset('model', model, index) : null;
+      });
+      container.nodes.forEach(function (node: any, nodeIndex: number) {
+        var modelAsset = modelAssetByNode[nodeIndex];
+        if (modelAsset !== null) {
+          node.addComponent('model', {
+            type: 'asset',
+            asset: modelAsset
+          });
+        }
+      });
+      container.materials = container.materials.map(function (material: pc.StandardMaterial, index: number) {
+        return createAsset('material', material, index);
+      });
+    }
   }
 }

@@ -1,5 +1,10 @@
 /// <reference types="react-scripts" />
-
+interface Window {
+    /**
+     * Used by PlayCanvas glTF parser.
+     */
+    DracoDecoderModule: any;
+}
 
 declare namespace pc {
     interface ScriptComponent {
@@ -13,20 +18,4 @@ declare namespace pc {
             },
         ): InstanceType<T>;
     }
-
-
-    // interface GlbResource {
-    //     constructor(data: any);
-    //     scene: pc.Entity | null;
-    //     scenes: pc.Entity[];
-    //     cameras: pc.CameraComponent[];
-    //     lights: pc.LightComponent[];
-    //     nodes: pc.Entity[];
-    //     animationIndicesByNode: number[][];
-    //     animations: pc.Asset[];
-    //     textures: pc.Asset[];
-    //     materials: pc.Asset[];
-    //     models: pc.Asset[];
-    //     registry: pc.AssetRegistry;
-    // }
 }
