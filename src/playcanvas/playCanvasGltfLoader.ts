@@ -1,4 +1,5 @@
 import * as pc from "playcanvas";
+import { ProcessRegistry } from "../core/process/processRegistry";
 
 export type GltfData = {
   scenes: pc.Entity[];
@@ -27,15 +28,11 @@ export class PlayCanvasGltfLoader {
           "customGltfLoader",
           { url: fileUrl, filename: fileName || assetName },
           null,
-          {}
+          ProcessRegistry
         );
         assets.add(asset);
       }
-      if (asset.resource) {
-        resolve(asset);
-        return;
-      }
-      asset.once("load", loadedAsset => resolve(loadedAsset));
+      asset.once("load", loaded => resolve(loaded));
       asset.once("error", err => reject(err));
       assets.load(asset);
     });
@@ -52,7 +49,7 @@ export class PlayCanvasGltfLoader {
     if (!container) {
       throw new Error("Asset is empty");
     }
-
+    console.log(container);
     return {
       scenes: container.scenes,
       defaultScene: 0

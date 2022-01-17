@@ -129,7 +129,7 @@ export function createModels(meshGroups: any, materials: any, defaultMaterial: a
   });
 };
 
-export function createModelByNode(gltf: any, models: any, skins: any, skinInstances: any) {
+export function createModelByNode(gltf: any, models: any, skins: any, skinInstances: any): pc.Entity[] {
   if (!gltf.hasOwnProperty('nodes') || gltf.nodes.length === 0) {
     return [];
   }

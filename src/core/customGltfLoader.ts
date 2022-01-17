@@ -58,7 +58,6 @@ export class CustomGltfLoader implements pc.ResourceHandler {
 
   private _defaultMaterial!: pc.StandardMaterial;
   public get defaultMaterial(): pc.StandardMaterial {
-    var mode = new pc.Model();
     if (!this._defaultMaterial)
       this._defaultMaterial = new pc.StandardMaterial();
     return this._defaultMaterial;
@@ -520,8 +519,8 @@ export class CustomGltfLoader implements pc.ResourceHandler {
     defaultMaterial: pc.StandardMaterial,
     options: any,
     callback: pc.callbacks.ResourceHandler) {
-    var preprocess = options && options.global && options.global.preprocess;
-    var postprocess = options && options.global && options.global.postprocess;
+    var preprocess = options && options.container && options.container.preprocess;
+    var postprocess = options && options.container && options.container.postprocess;
     if (preprocess) {
       preprocess(gltf);
     }
