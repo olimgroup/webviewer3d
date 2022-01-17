@@ -4,8 +4,8 @@ import * as pc from "playcanvas";
 import {
   createNodes,
   createScenes,
-  createMaterials,
   createMeshes,
+  createMaterials,
   createModels,
   createModelByNode,
 } from "./gltfConverter";
@@ -28,8 +28,8 @@ export class GlbContainerAssets {
   public generate() {
     const nodes = createNodes(this.gltf, this.options);
     const scenes = createScenes(this.gltf, nodes, this.options);
-    const meshes = createMeshes(this.graphicsDevice, this.gltf, this.bufferViews, false);
-    const materials = createMaterials(this.gltf, this.textures.map(asset => { return asset.resource; }), this.options, true)
+    const meshes = createMeshes(this.graphicsDevice, this.gltf, this.bufferViews);
+    const materials = createMaterials(this.gltf, this.textures.map(asset => { return asset.resource; }), this.options)
     const models = createModels(meshes, materials, materials[0]);
     const modelByNode = createModelByNode(this.gltf, models, null, null);
     return {
@@ -525,8 +525,6 @@ export class CustomGltfLoader implements pc.ResourceHandler {
     if (preprocess) {
       preprocess(gltf);
     }
-    var disableFlipV = gltf.asset && gltf.asset.generator === 'PlayCanvas';
-
     var result = new GlbContainerAssets(gltf, options, textureAssets, CustomGltfLoader.app.graphicsDevice, bufferViews);
     if (postprocess) {
       postprocess(gltf, result);
@@ -586,32 +584,29 @@ export class CustomGltfLoader implements pc.ResourceHandler {
   }
   patch(asset: pc.Asset, assets: pc.AssetRegistry): void {
     var container = asset.resource;
-    var data = container.gltf;
-    if (data) {
-      var createAsset = function (type: any, resource: any, index: number) {
-        var subAsset = new pc.Asset(asset.name + '/' + type + '/' + index, type, {
-          url: ''
+    var CreateAndAddAsset = function (type: any, resource: any, index: number) {
+      var subAsset = new pc.Asset(asset.name + '/' + type + '/' + index, type, {
+        url: ''
+      });
+      subAsset.resource = resource;
+      subAsset.loaded = true;
+      assets.add(subAsset);
+      return subAsset;
+    };
+    var modelAssetByNode = container.modelByNode.map(function (model: any, index: number) {
+      return model !== null ? CreateAndAddAsset('model', model, index) : null;
+    });
+    container.nodes.forEach(function (node: any, nodeIndex: number) {
+      var modelAsset = modelAssetByNode[nodeIndex];
+      if (modelAsset !== null) {
+        node.addComponent('model', {
+          type: 'asset',
+          asset: modelAsset
         });
-        subAsset.resource = resource;
-        subAsset.loaded = true;
-        assets.add(subAsset);
-        return subAsset;
-      };
-      var modelAssetByNode = container.modelByNode.map(function (model: any, index: number) {
-        return model !== null ? createAsset('model', model, index) : null;
-      });
-      container.nodes.forEach(function (node: any, nodeIndex: number) {
-        var modelAsset = modelAssetByNode[nodeIndex];
-        if (modelAsset !== null) {
-          node.addComponent('model', {
-            type: 'asset',
-            asset: modelAsset
-          });
-        }
-      });
-      container.materials = container.materials.map(function (material: pc.StandardMaterial, index: number) {
-        return createAsset('material', material, index);
-      });
-    }
+      }
+    });
+    container.materials = container.materials.map(function (material: pc.StandardMaterial, index: number) {
+      return CreateAndAddAsset('material', material, index);
+    });
   }
 }

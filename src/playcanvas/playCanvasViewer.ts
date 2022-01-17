@@ -22,7 +22,6 @@ export class PlayCanvasViewer {
     }
 
     private _createApp(canvas: HTMLCanvasElement) {
-
         const app = new pc.Application(canvas, {
             mouse: new pc.Mouse(document.body),
             keyboard: new pc.Keyboard(window),
@@ -36,6 +35,7 @@ export class PlayCanvasViewer {
         });
         app.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
         app.setCanvasResolution(pc.RESOLUTION_AUTO);
+        app.loader.addHandler("customGltfLoader", new CustomGltfLoader);
         window.addEventListener('resize', (event: Event) => {
             this._app.resizeCanvas();
         });
@@ -45,7 +45,6 @@ export class PlayCanvasViewer {
     public Initialize() {
         const scriptComponent = this._app.root.addComponent("script") as pc.ScriptComponent;
         scriptComponent.create(Root, {});
-        this.app.loader.addHandler("customGltfLoader", new CustomGltfLoader);
         this.app.start();
     }
 
@@ -56,7 +55,7 @@ export class PlayCanvasViewer {
                 this.app.root.addChild(gltf.scenes[gltf.defaultScene]);
             }
         } catch (e) {
-            console.log(e);
+            console.debug(e);
             throw e;
         }
     }
