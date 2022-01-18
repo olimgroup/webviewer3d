@@ -3,6 +3,7 @@ import * as pc from "playcanvas";
 import { Root } from "./scripts/Root"
 import { PlayCanvasGltfLoader } from "./playCanvasGltfLoader"
 import { CustomGltfLoader } from "../core/customGltfLoader"
+import { SketchPicker } from "react-color";
 
 export class PlayCanvasViewer {
 
@@ -48,11 +49,19 @@ export class PlayCanvasViewer {
         scriptComponent.create(Root, {});
         this.app.start();
         if (this.app.xr.supported) {
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.runWebXR();
             }, 100);
         }
-            
+
+        const jj = document.getElementsByClassName("sketch-picker");
+        if (jj) {
+            const kk = jj[0] as HTMLDivElement;
+            kk.style.position = "relative";
+            kk.style.width = "250px";
+            kk.style.top = "-430px";
+            kk.style.left = "20px";
+        }
     }
 
     public async loadGltf(url: string, fileName?: string) {
