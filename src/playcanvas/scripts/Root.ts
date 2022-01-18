@@ -1,5 +1,6 @@
 
 import * as pc from "playcanvas";
+import { FlyCamera } from "./flyCamera";
 
 class Root extends pc.ScriptType {
     private CameraComponent!: pc.CameraComponent;
@@ -28,8 +29,10 @@ class Root extends pc.ScriptType {
         const entity = new pc.Entity('camera');
         const component = entity.addComponent('camera') as pc.CameraComponent;
         component.clearColor = new pc.Color(0.12, 0.11, 0.15);
-        component.entity.setPosition(0, 5, 10);
+        component.entity.setPosition(0, 10, 15);
         component.entity.setLocalEulerAngles(-35, 0, 0);
+        const script = entity.addComponent('script') as pc.ScriptComponent;
+        script.create(FlyCamera);
         return component;
     }
 

@@ -3,6 +3,7 @@ import * as pc from "playcanvas";
 import { Root } from "./scripts/Root"
 import { PlayCanvasGltfLoader } from "./playCanvasGltfLoader"
 import { CustomGltfLoader } from "../core/customGltfLoader"
+
 export class PlayCanvasViewer {
 
     constructor(public canvas: HTMLCanvasElement) {
