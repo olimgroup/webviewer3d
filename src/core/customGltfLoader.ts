@@ -10,12 +10,22 @@ import {
   createModelByNode,
 } from "./gltfConverter";
 
+export type GlbLoadedContainerType = {
+  gltf: any,
+  scenes: pc.Entity[],
+  nodes: pc.Entity[],
+  materials: pc.StandardMaterial[],
+  modelByNode: pc.Entity[],
+  textures: pc.Asset[]
+};
+
 export class GlbContainerAssets {
   private options: any;
   private gltf: any;
   private textures: pc.Asset[] = [];
   private graphicsDevice: pc.GraphicsDevice;
   private bufferViews: Uint8Array[];
+  public extensions: any;
 
   constructor(gltf: any, options: any, textureAssets: pc.Asset[], graphicsDevice: pc.GraphicsDevice, bufferViews: Uint8Array[]) {
     this.options = options;
@@ -25,7 +35,7 @@ export class GlbContainerAssets {
     this.bufferViews = bufferViews;
   }
 
-  public generate() {
+  public generate(): GlbLoadedContainerType {
     const nodes = createNodes(this.gltf, this.options);
     const scenes = createScenes(this.gltf, nodes, this.options);
     const meshes = createMeshes(this.graphicsDevice, this.gltf, this.bufferViews);
@@ -38,6 +48,7 @@ export class GlbContainerAssets {
       nodes: nodes,
       materials: materials,
       modelByNode: modelByNode,
+      textures: this.textures,
     }
   }
 }
@@ -582,7 +593,7 @@ export class CustomGltfLoader implements pc.ResourceHandler {
     return data.generate();
   }
   patch(asset: pc.Asset, assets: pc.AssetRegistry): void {
-    var container = asset.resource;
+    var container = asset.resource as GlbLoadedContainerType;
     var CreateAndAddAsset = function (type: any, resource: any, index: number) {
       var subAsset = new pc.Asset(asset.name + '/' + type + '/' + index, type, {
         url: ''
@@ -605,7 +616,7 @@ export class CustomGltfLoader implements pc.ResourceHandler {
       }
     });
     container.materials = container.materials.map(function (material: pc.StandardMaterial, index: number) {
-      return CreateAndAddAsset('material', material, index);
+      return CreateAndAddAsset('material', material, index).resource;
     });
   }
 }

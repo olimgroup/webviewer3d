@@ -1,6 +1,7 @@
 
 import * as pc from "playcanvas";
 
+const diffuseChunk = ["#ifdef MAPCOLOR", "uniform vec3 material_diffuse;", "#endif", "", "#ifdef MAPTEXTURE", "uniform sampler2D texture_diffuseMap;", "#endif", "", "void getAlbedo() {", "	dAlbedo = vec3(1.0);", "", "#ifdef MAPCOLOR", "	dAlbedo *= material_diffuse.rgb;", "#endif", "", "#ifdef MAPTEXTURE", "	dAlbedo *= gammaCorrectInput(addAlbedoDetail(texture2D(texture_diffuseMap, $UV).$CH));", "#endif", "", "#ifdef MAPVERTEX", "	dAlbedo *= saturate(vVertexColor.$VC);", "#endif", "}"].join('\n');
 const glossChunk = ["#ifdef MAPFLOAT", "uniform float material_shininess;", "#endif", "", "#ifdef MAPTEXTURE", "uniform sampler2D texture_glossMap;", "#endif", "", "void getGlossiness() {", "		dGlossiness = 1.0;", "", "#ifdef MAPFLOAT", "		dGlossiness *= material_shininess;", "#endif", "", "#ifdef MAPTEXTURE", "		dGlossiness *= texture2D(texture_glossMap, $UV).$CH;", "#endif", "", "#ifdef MAPVERTEX", "		dGlossiness *= saturate(vVertexColor.$VC);", "#endif", "", "		dGlossiness = 1.0 - dGlossiness;", "", "		dGlossiness += 0.0000001;", "}"].join('\n');
 const specularChunk = ["#ifdef MAPCOLOR", "uniform vec3 material_specular;", "#endif", "", "#ifdef MAPTEXTURE", "uniform sampler2D texture_specularMap;", "#endif", "", "void getSpecularity() {", "		dSpecularity = vec3(1.0);", "", "		#ifdef MAPCOLOR", "				dSpecularity *= material_specular;", "		#endif", "", "		#ifdef MAPTEXTURE", "				vec3 srgb = texture2D(texture_specularMap, $UV).$CH;", "				dSpecularity *= vec3(pow(srgb.r, 2.2), pow(srgb.g, 2.2), pow(srgb.b, 2.2));", "		#endif", "", "		#ifdef MAPVERTEX", "				dSpecularity *= saturate(vVertexColor.$VC);", "		#endif", "}"].join('\n');
 const clearCoatGlossChunk = ["#ifdef MAPFLOAT", "uniform float material_clearCoatGlossiness;", "#endif", "", "#ifdef MAPTEXTURE", "uniform sampler2D texture_clearCoatGlossMap;", "#endif", "", "void getClearCoatGlossiness() {", "		ccGlossiness = 1.0;", "", "#ifdef MAPFLOAT", "		ccGlossiness *= material_clearCoatGlossiness;", "#endif", "", "#ifdef MAPTEXTURE", "		ccGlossiness *= texture2D(texture_clearCoatGlossMap, $UV).$CH;", "#endif", "", "#ifdef MAPVERTEX", "		ccGlossiness *= saturate(vVertexColor.$VC);", "#endif", "", "		ccGlossiness = 1.0 - ccGlossiness;", "", "		ccGlossiness += 0.0000001;", "}"].join('\n');
@@ -37,6 +38,7 @@ export const createMaterial = (gltfMaterial: any, textures: pc.Texture[]): pc.St
   material.diffuseVertexColor = true;
   material.specularTint = true;
   material.specularVertexColor = true;
+  //material.chunks.diffusePS = diffuseChunk;
 
   if (gltfMaterial.hasOwnProperty('name')) {
     material.name = gltfMaterial.name;

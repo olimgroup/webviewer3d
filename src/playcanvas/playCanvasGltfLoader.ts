@@ -1,5 +1,7 @@
 import * as pc from "playcanvas";
-import { ProcessRegistry } from "../core/process/processRegistry";
+import { ExtensionRegistry, ExtensionParser } from "../core/extensions/extensionParser";
+import { LightMapExtensionParser } from "../core/extensions/lightMapParser";
+import { GlbLoadedContainerType } from "../core/customGltfLoader";
 
 export type GltfData = {
   scenes: pc.Entity[];
@@ -11,9 +13,14 @@ export class PlayCanvasGltfLoader {
   public get app(): pc.Application {
     return this._app;
   }
+  private _registry: ExtensionRegistry;
+  public get registry(): ExtensionRegistry {
+    return this._registry;
+  }
 
   public constructor(private application: pc.Application) {
     this._app = application;
+    this._registry = new ExtensionRegistry();
   }
 
   private async _loadAsset(url: string, fileName?: string): Promise<pc.Asset> {
@@ -28,7 +35,8 @@ export class PlayCanvasGltfLoader {
           "customGltfLoader",
           { url: fileUrl, filename: fileName || assetName },
           null,
-          ProcessRegistry
+          this.registry.containerAssetOptions
+
         );
         assets.add(asset);
       }
@@ -40,19 +48,50 @@ export class PlayCanvasGltfLoader {
 
   public async load(url: string, fileName?: string): Promise<GltfData> {
 
-    const loadedAsset = await this._loadAsset(url, fileName);
-    if (!loadedAsset) {
-      throw new Error("Asset not found");
-    }
+    const extensions: ExtensionParser[] = [
+      new LightMapExtensionParser()
+    ];
+    this._clearExtensions();
+    this._registerExtensions(extensions);
 
-    const container = loadedAsset.resource;
-    if (!container) {
-      throw new Error("Asset is empty");
+    try {
+      const loadedAsset = await this._loadAsset(url, fileName);
+      if (!loadedAsset) {
+        throw new Error("Asset not found");
+      }
+      const container = loadedAsset.resource;
+      if (!container) {
+        throw new Error("Asset is empty");
+      }
+      this._postParseExtensions(extensions, container);
+      this._unregisterExtensions(extensions);
+      return {
+        scenes: container.scenes,
+        defaultScene: 0
+      }
+    } catch (e) {
+      this._unregisterExtensions(extensions);
+      throw e;
     }
-    console.log(container);
-    return {
-      scenes: container.scenes,
-      defaultScene: 0
-    }
+  }
+
+
+  private _clearExtensions() {
+    this.registry.removeAll();
+  }
+
+  private _registerExtensions(extensions: ExtensionParser[]) {
+    extensions.forEach(e => e.register(this.registry));
+  }
+
+  private _unregisterExtensions(extensions: ExtensionParser[]) {
+    extensions.forEach(e => e.unregister(this.registry));
+  }
+
+  private _postParseExtensions(
+    extensions: ExtensionParser[],
+    container: GlbLoadedContainerType,
+  ) {
+    extensions.forEach(e => e.postParse(container));
   }
 }
