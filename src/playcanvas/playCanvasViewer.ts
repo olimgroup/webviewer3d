@@ -47,6 +47,12 @@ export class PlayCanvasViewer {
         const scriptComponent = this._app.root.addComponent("script") as pc.ScriptComponent;
         scriptComponent.create(Root, {});
         this.app.start();
+        if (this.app.xr.supported) {
+            setTimeout(()=>{
+                this.runWebXR();
+            }, 100);
+        }
+            
     }
 
     public async loadGltf(url: string, fileName?: string) {
@@ -58,6 +64,23 @@ export class PlayCanvasViewer {
         } catch (e) {
             console.debug(e);
             throw e;
+        }
+    }
+    public runWebXR() {
+        if (this.app.xr.isAvailable(pc.XRTYPE_VR)) {
+            let entity = this.app.root.findByName('camera') as pc.Entity;
+            // start session
+            if (entity.camera) {
+                entity.camera.startXr(pc.XRTYPE_VR, pc.XRSPACE_LOCALFLOOR, {
+                    callback: function(err) {
+                        if (err) {
+                            throw err;
+                        }
+                    }
+                });
+            }
+        } else {
+            throw Error("WebXR not available");
         }
     }
 }
