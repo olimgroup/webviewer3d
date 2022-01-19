@@ -4,7 +4,7 @@ import { PlayCanvasViewer } from '../playcanvas/playCanvasViewer';
 import { SketchPicker, ColorResult } from "react-color";
 import { makeStyles } from "@material-ui/core";
 
-const useStyls = makeStyles(()=>({
+const useStyles = makeStyles(()=>({
   palette: {
     position: "relative",
     width: "250px",
@@ -14,7 +14,7 @@ const useStyls = makeStyles(()=>({
 }));
 
 function ColorPalette(props: {viewer:PlayCanvasViewer}) {
-  const classes = useStyls();
+  const classes = useStyles();
   const [currentColor, setCurrentColor] = useState<string>('#ffffff');  
   function onChange(color:ColorResult, event:React.ChangeEvent<HTMLInputElement>) {
     props.viewer.broadcastEvent("onChange", color, event);
