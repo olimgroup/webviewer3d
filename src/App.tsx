@@ -13,22 +13,21 @@ function App() {
   setInterval(()=>{
     console.log("?");
     dispatch(setColor(color + "a"));
-  }, 1000)
+  }, 1000);
 
   useEffect(() => {
     if (!canvasRef.current) {
       return;
     }
-    const viewer = new PlayCanvasViewer(canvasRef.current);
-    viewer.Initialize();
-    viewer.loadGltf("../../assets/couch/couch.gltf", "couch.gltf");
-    
-  }, []);
-
+    viewer.Initialize(canvasRef.current);
+    viewer.loadGltf("../../assets/couch/couch.gltf", "couch.gltf");    
+  }, []); 
+  
   return (
     <div>
       <canvas ref={canvasRef} />
-    </div>
+      <ColorPalette viewer={viewer}/>
+    </div>    
   );
 }
 
