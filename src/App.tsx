@@ -1,8 +1,10 @@
 import React, { useRef, useEffect } from 'react';
 import { PlayCanvasViewer } from './playcanvas/playCanvasViewer';
+import WebcamContainer from './components/webcam/webcamContainer';
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const webcamRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!canvasRef.current) {
@@ -12,10 +14,12 @@ function App() {
     viewer.Initialize();
     viewer.loadGltf("../../assets/couch/couch.gltf", "couch.gltf");
     
+    //const webcam = new WebcamContainer();
   }, []);
 
   return (
     <div>
+      <WebcamContainer></WebcamContainer>
       <canvas ref={canvasRef} />
     </div>
   );
