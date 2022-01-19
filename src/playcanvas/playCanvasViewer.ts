@@ -7,11 +7,11 @@ import { SketchPicker } from "react-color";
 
 export class PlayCanvasViewer {
 
-    constructor(public canvas: HTMLCanvasElement) {
-        this._app = this._createApp(canvas);
+    constructor() {
+
     }
 
-    private _app: pc.Application;
+    private _app!: pc.Application;
     public get app(): pc.Application {
         return this._app;
     }
@@ -21,6 +21,13 @@ export class PlayCanvasViewer {
         if (this._gltfLoader == null)
             this._gltfLoader = new PlayCanvasGltfLoader(this.app);
         return this._gltfLoader;
+    }
+
+    private _root?: Root;
+    public get root(): Root | null {
+        if (!this._root)
+            return null;
+        return this._root;
     }
 
     private _createApp(canvas: HTMLCanvasElement) {
@@ -44,23 +51,15 @@ export class PlayCanvasViewer {
         return app;
     }
 
-    public Initialize() {
+    public Initialize(canvas: HTMLCanvasElement) {
+        this._app = this._createApp(canvas);
         const scriptComponent = this._app.root.addComponent("script") as pc.ScriptComponent;
-        scriptComponent.create(Root, {});
+        this._root = scriptComponent.create(Root, {}) as Root;
         this.app.start();
         if (this.app.xr.supported) {
             setTimeout(() => {
                 this.runWebXR();
             }, 100);
-        }
-
-        const jj = document.getElementsByClassName("sketch-picker");
-        if (jj) {
-            const kk = jj[0] as HTMLDivElement;
-            kk.style.position = "relative";
-            kk.style.width = "250px";
-            kk.style.top = "-430px";
-            kk.style.left = "20px";
         }
     }
 
@@ -81,7 +80,7 @@ export class PlayCanvasViewer {
             // start session
             if (entity.camera) {
                 entity.camera.startXr(pc.XRTYPE_VR, pc.XRSPACE_LOCALFLOOR, {
-                    callback: function(err) {
+                    callback: function (err) {
                         if (err) {
                             throw err;
                         }
@@ -91,5 +90,9 @@ export class PlayCanvasViewer {
         } else {
             throw Error("WebXR not available");
         }
+    }
+
+    public broadcastEvent(type: string, arg0: any = null, arg1: any = null) {
+        this.root?.broadcastEvent(type, arg0, arg1);
     }
 }
