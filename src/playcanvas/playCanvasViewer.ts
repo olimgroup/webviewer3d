@@ -3,6 +3,8 @@ import * as pc from "playcanvas";
 import { Root } from "./scripts/Root"
 import { PlayCanvasGltfLoader } from "./playCanvasGltfLoader"
 import { CustomGltfLoader } from "../core/customGltfLoader"
+import { store } from '../data';
+
 
 export class PlayCanvasViewer {
 
@@ -47,9 +49,13 @@ export class PlayCanvasViewer {
         const scriptComponent = this._app.root.addComponent("script") as pc.ScriptComponent;
         scriptComponent.create(Root, {});
         this.app.start();
+
     }
 
     public async loadGltf(url: string, fileName?: string) {
+        store.subscribe(()=>{
+            console.log(store.getState().color);
+        });
         try {
             const gltf = await this.gltfLoader.load(url, fileName);
             if (gltf.scenes.length != 0) {
