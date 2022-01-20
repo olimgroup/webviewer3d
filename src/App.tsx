@@ -1,10 +1,11 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { PlayCanvasViewer } from './playcanvas/playCanvasViewer';
-import ColorPalette from "./components/ColorPalette";
+import ColorPalette from './components/ColorPalette';
 
 function App() {
+  const viewer = new PlayCanvasViewer();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  let viewer = new PlayCanvasViewer();
+  
   useEffect(() => {
     if (!canvasRef.current) {
       return;

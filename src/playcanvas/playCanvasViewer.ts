@@ -3,13 +3,8 @@ import * as pc from "playcanvas";
 import { Root } from "./scripts/Root"
 import { PlayCanvasGltfLoader } from "./playCanvasGltfLoader"
 import { CustomGltfLoader } from "../core/customGltfLoader"
-import { SketchPicker } from "react-color";
 
 export class PlayCanvasViewer {
-
-    constructor() {
-
-    }
 
     private _app!: pc.Application;
     public get app(): pc.Application {
@@ -64,6 +59,7 @@ export class PlayCanvasViewer {
     }
 
     public async loadGltf(url: string, fileName?: string) {
+
         try {
             const gltf = await this.gltfLoader.load(url, fileName);
             if (gltf.scenes.length != 0) {
@@ -74,6 +70,7 @@ export class PlayCanvasViewer {
             throw e;
         }
     }
+
     public runWebXR() {
         if (this.app.xr.isAvailable(pc.XRTYPE_VR)) {
             let entity = this.app.root.findByName('camera') as pc.Entity;
