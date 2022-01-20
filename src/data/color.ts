@@ -1,9 +1,10 @@
 //Action object
 
+import { ColorResult } from "react-color";
 const SET_COLOR = 'color/SET' as const;
 
 // Action creator
-export const setColor = (diff: string) => ({
+export const setColor = (diff: ColorResult) => ({
   type: SET_COLOR,
   payload: diff
 });
@@ -14,12 +15,16 @@ type ColorAction =
 
 // Store
 type ColorState = {
-  color: string;
+  r: number;
+  g: number;
+  b: number;
 };
 
 // Init Store
 const initialState: ColorState = {
-  color: "black"
+  r: 1,
+  g: 1,
+  b: 1
 };
 
 // Reducer
@@ -29,7 +34,11 @@ function color(
 ): ColorState {
   switch (action.type) {
     case SET_COLOR:
-      return { color: action.payload };
+      return {
+        r: action.payload.rgb.r / 255,
+        g: action.payload.rgb.g / 255,
+        b: action.payload.rgb.b / 255,
+      };
     default:
       return state;
   }

@@ -2,13 +2,14 @@
 import * as pc from "playcanvas";
 import { FlyCamera } from "./flyCamera";
 import { ColorResult } from "react-color";
-
+import { store } from '../../data';
 interface Root {
     CameraComponent: pc.CameraComponent;
     LightComponent: pc.LightComponent;
 }
 class Root extends pc.ScriptType {
     public initialize() {
+        store.subscribe(() => this.changeFloorColor(store.getState().color));
         this.CameraComponent = this.init_camera();
         this.entity.addChild(this.CameraComponent.entity);
 
@@ -34,7 +35,7 @@ class Root extends pc.ScriptType {
         component.entity.setPosition(0, 10, 15);
         component.entity.setLocalEulerAngles(-35, 0, 0);
         const script = entity.addComponent('script') as pc.ScriptComponent;
-        //script.create(FlyCamera);
+        script.create(FlyCamera);
         return component;
     }
 
@@ -48,22 +49,27 @@ class Root extends pc.ScriptType {
     public update(dt: number): void {
     }
 
+    public changeFloorColor(payload:{ r:number, g:number, b:number }) {
+        const floor = this.entity.findByName("Floor") as pc.Entity;
+        if (floor) {
+            const sm = floor.model?.model.meshInstances[0].material as pc.StandardMaterial;
+            if (sm) {
+                sm.diffuse.r = payload.r;
+                sm.diffuse.g = payload.g;
+                sm.diffuse.b = payload.b;
+                sm.update();
+            }
+        }
+    }
+
     public broadcastEvent(type: string, arg0: any = null, arg1: any = null) {
         if (type === "onChange") {
-            const floor = this.entity.findByName("Floor") as pc.Entity;
             const color = arg0 as ColorResult;
-            if (floor && color) {
-                const redValue = color.rgb.r / 255;
-                const greenValue = color.rgb.g / 255;
-                const blueValue = color.rgb.b / 255;
-                const sm = floor.model?.model.meshInstances[0].material as pc.StandardMaterial;
-                if (sm) {
-                    sm.diffuse.r = redValue;
-                    sm.diffuse.g = greenValue;
-                    sm.diffuse.b = blueValue;
-                    sm.update();
-                }
-            }
+            this.changeFloorColor({
+                r: color.rgb.r / 255,
+                g: color.rgb.g / 255,
+                b: color.rgb.b / 255,
+            });
         }
     }
 };
