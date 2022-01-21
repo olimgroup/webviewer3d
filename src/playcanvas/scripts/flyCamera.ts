@@ -74,7 +74,7 @@ export class FlyCamera extends pc.ScriptType {
   };
 
   onMouseDown(event: pc.MouseEvent) {
-    if (event.button === 0) {
+    if (event.button === pc.MOUSEBUTTON_RIGHT) {
       this.lmbDown = true;
 
       // When the mouse button is clicked try and capture the pointer
@@ -85,7 +85,7 @@ export class FlyCamera extends pc.ScriptType {
   };
 
   onMouseUp(event: pc.MouseEvent) {
-    if (event.button === 0) {
+    if (event.button === pc.MOUSEBUTTON_RIGHT) {
       this.lmbDown = false;
     }
   };
