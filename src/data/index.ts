@@ -1,9 +1,11 @@
 import { combineReducers } from 'redux';
 import color from './color';
+import channel from './channel';
 import { createStore } from 'redux';
 
 const rootReducer = combineReducers({
-  color
+  color,
+  channel
 });
 export const store = createStore(rootReducer);
 
