@@ -1,27 +1,29 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { PlayCanvasViewer } from './playcanvas/playCanvasViewer';
 import WebcamContainer from './components/webcam/webcamContainer';
+import ColorPalette from './components/ColorPalette';
 
 function App() {
+  const viewer = new PlayCanvasViewer();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const webcamRef = useRef<HTMLDivElement>(null);
-
+  
   useEffect(() => {
     if (!canvasRef.current) {
       return;
     }
-    const viewer = new PlayCanvasViewer(canvasRef.current);
-    viewer.Initialize();
+
+    viewer.Initialize(canvasRef.current);
     viewer.loadGltf("../../assets/couch/couch.gltf", "couch.gltf");
     
-    //const webcam = new WebcamContainer();
   }, []);
 
   return (
     <div>
       <WebcamContainer></WebcamContainer>
       <canvas ref={canvasRef} />
-    </div>
+      <ColorPalette viewer={viewer}/>
+    </div>    
   );
 }
 
