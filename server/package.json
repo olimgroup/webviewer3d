@@ -1,0 +1,20 @@
+{
+  "name": "webviewer3d-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "carl",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "express": "^4.17.3",
+    "twilio": "^2.11.1",
+    "websocket": "^1.0.34"
+  },
+  "devDependencies": {
+    "twilio-video": "^2.0.0"
+  }
+}

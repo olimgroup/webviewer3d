@@ -3,26 +3,15 @@ import * as pc from "playcanvas";
 import { FlyCamera } from "./flyCamera";
 import { ColorResult } from "react-color";
 import { store } from '../../data';
-import { LocalDataTrack } from "twilio-video";
 
 interface Root {
   CameraComponent: pc.CameraComponent;
   LightComponent: pc.LightComponent;
 }
 class Root extends pc.ScriptType {
-  public track: LocalDataTrack | null | undefined;
   public initialize() {
     store.subscribe(() => {
       this.changeFloorColor(store.getState().color);
-      console.log(this.track);
-      this.track = store.getState().channel.channel;
-      if(this.track) {
-        this.track.on('message', (data: string) => {
-          const { type, rgb } = JSON.parse(data);
-          console.log(type, rgb);
-          
-        });
-      }
     });
     this.CameraComponent = this.initCamera();
     this.entity.addChild(this.CameraComponent.entity);
@@ -79,10 +68,6 @@ class Root extends pc.ScriptType {
   public broadcastEvent(type: string, arg0: any = null, arg1: any = null) {
     if (type === "onChange") {
       const color = arg0 as ColorResult;
-      store.getState().channel.channel?.send(JSON.stringify({
-        "type": "setColor",
-        "payload": color.rgb
-        }));
       this.changeFloorColor({
         r: color.rgb.r / 255,
         g: color.rgb.g / 255,

@@ -2,8 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { LocalDataTrack, connect, createLocalTracks, LocalTrack, Room } from 'twilio-video';
 import { CancelablePromise } from 'twilio-video/tsdef/types';
-import { useDispatch } from 'react-redux';
-import { setChannel } from '../../data/channel';
 
 const Wrapper = styled.div`
   position: absolute;
@@ -43,8 +41,6 @@ const Button = styled.div`
 function WebcamContainer() {
   const wrapperInner = useRef<HTMLDivElement>(null);
   const dataTrack = setupLocalDataTrack();
-  const dispatch = useDispatch();
-  dispatch(setChannel(dataTrack));
 
   let audioAndVideoTrack: LocalTrack[];
   let tracks: LocalTrack[];
@@ -153,7 +149,7 @@ function WebcamContainer() {
   }
 
   async function getToken(identity: string) {
-    const response = await fetch(`http://localhost:9000/token?identity=${encodeURIComponent(identity)}`);
+    const response = await fetch(`http://localhost:3001/token?identity=${encodeURIComponent(identity)}`);
     if (!response.ok) {
       throw new Error('Unable to fetch Access Token');
     }

@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core";
 import { useDispatch } from 'react-redux';
 import { setColor } from '../data/color';
 
+import WebSocketHub from '../ws';
 const useStyles = makeStyles(()=>({
   palette: {
     position: "relative",
@@ -14,6 +15,9 @@ const useStyles = makeStyles(()=>({
     left: "20px"
   }
 }));
+
+const wsh = WebSocketHub.getInstance();
+
 
 function ColorPalette(props: {viewer:PlayCanvasViewer}) {
   const dispatch = useDispatch();
@@ -24,7 +28,14 @@ function ColorPalette(props: {viewer:PlayCanvasViewer}) {
     props.viewer.broadcastEvent("onChange", color, event);
     setCurrentColor(color.hex);
     dispatch(setColor(color));
+    wsh.sendMessage("colorChange", color);
   }
+
+  wsh.setCallback("colorChange", (color: ColorResult)=>{
+    props.viewer.broadcastEvent("onChange", color, event);
+    setCurrentColor(color.hex);
+    dispatch(setColor(color));
+  })
   return (
     <SketchPicker className={classes.palette} color={currentColor} onChange={onChange} />
   );
