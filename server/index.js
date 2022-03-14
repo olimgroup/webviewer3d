@@ -45,6 +45,7 @@ wss.on('connection', ws => {
     ws: ws,
     avatar: {}
   });
+  ws.id = id;
 
   ws.send(JSON.stringify({ type: 'handshake', id: id, value: '' }));
   ws.on('message', message => {
@@ -61,17 +62,22 @@ wss.on('connection', ws => {
         client.ws.send(JSON.stringify({ type: 'join', id: target.id, value: target.avatar}));
       });
     } else {
+      if (obj.type == 'move') {
+        const idx = clients.findIndex(c => c.id == obj.value.id);
+        clients[idx].avatar.position = obj.value.position;
+      }
       clients.forEach((client)=>{
         client.ws.send(message.toString());
       });
     }
   });
   ws.on('close', message => {
-    const obj = JSON.parse(message);
-    const target = clients.find(client => { client.id == obj.id});
-    if(!target) return;
+    const idx = clients.findIndex(client => { return client.id == ws.id});
+    if (idx < 0) return;
+    const id = clients[idx].id;
+    clients.splice(idx, 1);
     clients.forEach((client) => {
-      client.ws.send(JSON.stringify({ type: 'leave', id: target.id, value: '' }));
+      client.ws.send(JSON.stringify({ type: 'leave', id: id, value: {id: id} }));
     });
   });
 });

@@ -61,7 +61,6 @@ export class PlayCanvasViewer {
     this._app.keyboard.on(pc.EVENT_KEYDOWN, this._onKeyUp, this);
     this._app.assets.loadFromUrl("../../assets/NotoSansKR-Medium/NotoSansKR-Medium.json", "font", (err, asset) => {
       if (asset) {
-        console.log(asset);
         asset.name = "notosans";
         this._app.assets.add(asset);
       }
@@ -78,29 +77,38 @@ export class PlayCanvasViewer {
 
     //Get World Information
     this.wsh.setCallback('world', (data: any) => {
-      console.log(data);
+      data.forEach((obj: { id: number | undefined; position: number[] | undefined; color: pc.Color | undefined; }) => {
+        if (obj.id != this.wsh.getID()) {
+          const ch = this.createCharacter(obj.id, obj.position, obj.color);
+        }
+      });
     });
 
     //Create and Register local avatar
     setTimeout(() => {
       const char = this.createCharacter();
-      this.wsh.sendMessage('join', { position: char.getPosition(), color: char.getColor() });
+      this.wsh.sendMessage('join', { id: char._id, position: char.getPosition(), color: char.getColor() });
       this.wsh.sendMessage('world', {});
     }, 500);
 
     // Message handlers
+    this.wsh.setCallback('join', (obj: any) => {
+      if(obj.id != this.wsh.getID())
+        this.createCharacter(obj.id, obj.position, obj.color);
+    });
+
+    this.wsh.setCallback('leave', (obj: any) => {
+      this.removeCharacter(obj.id);
+    });
+
     this.wsh.setCallback('move', (obj: any) => {
-      console.log(obj.id, this._chracters);
       if (this._chracters.has(obj.id + '')) {
-        console.log(obj.id);
         this._chracters.get(obj.id + '')?._control?.moveTo(new pc.Vec3(obj.position));
       }
     });
-
+    
     this.wsh.setCallback('chat', (obj: any) => {
-      console.log(obj.id, this._chracters);
       if (this._chracters.has(obj.id + '')) {
-        console.log('chat', obj.id);
         this._chracters.get(obj.id + '')?._control?.chat(obj.msg);
       }
     });
@@ -149,15 +157,14 @@ export class PlayCanvasViewer {
     this.root?.broadcastEvent(type, arg0, arg1);
   }
 
-  private createCharacter(pos?: pc.Vec3, color?: pc.Color) {
+  private createCharacter(id?: number, pos?: number[], color?: pc.Color) {
     const ch = new Character();
-    ch._id = this.wsh.getID().toString();
+    ch._id = id? id.toString() : this.wsh.getID().toString();
     //ch.fontAsset = this._app.assets.find('notosans').id;
     this._root?.entity.addChild(ch);
     this._chracters.set(ch._id, ch);
-
     if (pos) {
-      ch.setPosition(new pc.Vec3(pos.x, pos.y, pos.z));
+      ch.setPosition(new pc.Vec3(pos[0], pos[1], pos[2]));
     } else {
       ch.setPosition(new pc.Vec3(0, 0, 0));
     }
@@ -167,6 +174,12 @@ export class PlayCanvasViewer {
       ch.setColor(new pc.Color(Math.random(), Math.random(), Math.random(), 1));
     }
     return ch;
+  }
+  private removeCharacter(id: Number) {
+    const ch = this._chracters.get(id.toString());
+    this._chracters.delete(id.toString());
+    if(ch)
+      this._root?.entity.removeChild(ch);
   }
   private _onKeyUp(event: pc.KeyboardEvent) {
     if (event.key == pc.KEY_ENTER) {

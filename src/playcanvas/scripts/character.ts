@@ -17,11 +17,11 @@ export class CharacterComponent extends pc.ScriptType {
   }
 
   update(dt: number) {
-    //this._chatMsgTime -= dt;
+    this._chatMsgTime -= dt;
 
     const ch = this.entity as Character;
     const text = ch._text as pc.ElementComponent;
-    //text.enabled = this._chatMsgTime > 0;
+    text.enabled = this._chatMsgTime > 0;
 
     if (this._screen) {
       const camera = this.app.root.findComponent('camera') as pc.CameraComponent;
@@ -56,9 +56,7 @@ export class CharacterComponent extends pc.ScriptType {
   chat(msg: string) {
     const ch = this.entity as Character;
     const text = ch._text as pc.ElementComponent;
-    //text.fontAsset = ch.fontAsset!;
     text.text = msg;
-    console.log(text, msg, this);
     this._chatMsgTime = 4;
   }
 
