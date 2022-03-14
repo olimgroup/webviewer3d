@@ -15,13 +15,13 @@ export class PlayCanvasViewer {
   private _gltfLoader?: PlayCanvasGltfLoader;
   public get gltfLoader(): PlayCanvasGltfLoader {
     if (this._gltfLoader == null)
-    this._gltfLoader = new PlayCanvasGltfLoader(this.app);
+      this._gltfLoader = new PlayCanvasGltfLoader(this.app);
     return this._gltfLoader;
   }
 
   private _root?: Root;
   public get root(): Root | null {
-    if (!this._root)  return null;
+    if (!this._root) return null;
     return this._root;
   }
   private wsh: WebSocketHub;
@@ -60,7 +60,6 @@ export class PlayCanvasViewer {
     this._app.mouse.on(pc.EVENT_MOUSEUP, this._onMouseUp, this);
     this._app.keyboard.on(pc.EVENT_KEYDOWN, this._onKeyUp, this);
     this._app.assets.loadFromUrl("../../assets/NotoSansKR-Medium/NotoSansKR-Medium.json", "font", (err, asset) => {
-      console.log(err);
       if (asset) {
         console.log(asset);
         asset.name = "notosans";
@@ -78,31 +77,31 @@ export class PlayCanvasViewer {
     }
 
     //Get World Information
-    this.wsh.setCallback('world', (data: any)=> {
+    this.wsh.setCallback('world', (data: any) => {
       console.log(data);
     });
 
     //Create and Register local avatar
-    setTimeout(()=>{
+    setTimeout(() => {
       const char = this.createCharacter();
-      this.wsh.sendMessage('join', { position: char.getPosition(), color: char.getColor()});
+      this.wsh.sendMessage('join', { position: char.getPosition(), color: char.getColor() });
       this.wsh.sendMessage('world', {});
     }, 500);
 
     // Message handlers
-    this.wsh.setCallback('move', (obj: any)=> {
+    this.wsh.setCallback('move', (obj: any) => {
       console.log(obj.id, this._chracters);
-      if (this._chracters.has(obj.id+'')) {
+      if (this._chracters.has(obj.id + '')) {
         console.log(obj.id);
-        this._chracters.get(obj.id+'')?._control?.moveTo(new pc.Vec3(obj.position));
+        this._chracters.get(obj.id + '')?._control?.moveTo(new pc.Vec3(obj.position));
       }
     });
 
-    this.wsh.setCallback('chat', (obj: any)=> {
+    this.wsh.setCallback('chat', (obj: any) => {
       console.log(obj.id, this._chracters);
-      if (this._chracters.has(obj.id+'')) {
+      if (this._chracters.has(obj.id + '')) {
         console.log('chat', obj.id);
-        this._chracters.get(obj.id+'')?._control?.chat(obj.msg);
+        this._chracters.get(obj.id + '')?._control?.chat(obj.msg);
       }
     });
   }
@@ -142,7 +141,7 @@ export class PlayCanvasViewer {
         });
       }
     } else {
-        throw Error("WebXR not available");
+      throw Error("WebXR not available");
     }
   }
 
@@ -153,16 +152,16 @@ export class PlayCanvasViewer {
   private createCharacter(pos?: pc.Vec3, color?: pc.Color) {
     const ch = new Character();
     ch._id = this.wsh.getID().toString();
-    ch.fontAsset = this._app.assets.find('notosans').id;
+    //ch.fontAsset = this._app.assets.find('notosans').id;
     this._root?.entity.addChild(ch);
     this._chracters.set(ch._id, ch);
-    
-    if(pos) {
+
+    if (pos) {
       ch.setPosition(new pc.Vec3(pos.x, pos.y, pos.z));
     } else {
       ch.setPosition(new pc.Vec3(0, 0, 0));
     }
-    if(color) {
+    if (color) {
       ch.setColor(new pc.Color(color.r, color.g, color.b));
     } else {
       ch.setColor(new pc.Color(Math.random(), Math.random(), Math.random(), 1));
@@ -171,42 +170,42 @@ export class PlayCanvasViewer {
   }
   private _onKeyUp(event: pc.KeyboardEvent) {
     if (event.key == pc.KEY_ENTER) {
-        if (this._isChatActive) {
-            this._isChatActive = false;
-            const s = this._text.value as string;
-            // send to server
-            this.wsh.sendMessage('chat', {id: this.wsh.getID(), msg: this._text.value});
-            this._text.value = "";
-            this._text.hidden = true;
-            //this.canvas.focus();
-            if (this._root?.CameraComponent)
-                this._root.CameraComponent.enabled = true;
-        }
-        else {
-            this._isChatActive = true;
-            this._text.hidden = false;
-            this._text.focus();
-            if (this._root?.CameraComponent)
-                this._root.CameraComponent.enabled = false;
-        }
+      if (this._isChatActive) {
+        this._isChatActive = false;
+        const s = this._text.value as string;
+        // send to server
+        this.wsh.sendMessage('chat', { id: this.wsh.getID(), msg: this._text.value });
+        this._text.value = "";
+        this._text.hidden = true;
+        //this.canvas.focus();
+        if (this._root?.CameraComponent)
+          this._root.CameraComponent.enabled = true;
+      }
+      else {
+        this._isChatActive = true;
+        this._text.hidden = false;
+        this._text.focus();
+        if (this._root?.CameraComponent)
+          this._root.CameraComponent.enabled = false;
+      }
     }
 
     if (event.key == pc.KEY_ESCAPE) {
-        //this._gltfSceneRoot.enabled = !this._gltfSceneRoot.enabled;
+      //this._gltfSceneRoot.enabled = !this._gltfSceneRoot.enabled;
     }
   }
   private _onMouseUp(event: pc.MouseEvent) {
     if (event.button === pc.MOUSEBUTTON_RIGHT) {
-        const cm = this._root?.CameraComponent;
-        const start = cm?.screenToWorld(event.x, event.y, cm?.nearClip) as pc.Vec3;
-        const end = cm?.screenToWorld(event.x, event.y, cm?.farClip) as pc.Vec3;
-        let result = new pc.Vec3(0, 0, 0);
-        const K = (0 - start.y) / (end.y - start.y);
-        const X = K * (end.x - start.x) + start.x;
-        const Z = K * (end.z - start.z) + start.z;
-        result = new pc.Vec3(X, 0, Z);
-        
-        this.wsh.sendMessage('move', {id: this.wsh.getID(), position: [result.x, result.y, result.z]});
+      const cm = this._root?.CameraComponent;
+      const start = cm?.screenToWorld(event.x, event.y, cm?.nearClip) as pc.Vec3;
+      const end = cm?.screenToWorld(event.x, event.y, cm?.farClip) as pc.Vec3;
+      let result = new pc.Vec3(0, 0, 0);
+      const K = (0 - start.y) / (end.y - start.y);
+      const X = K * (end.x - start.x) + start.x;
+      const Z = K * (end.z - start.z) + start.z;
+      result = new pc.Vec3(X, 0, Z);
+
+      this.wsh.sendMessage('move', { id: this.wsh.getID(), position: [result.x, result.y, result.z] });
     }
   }
 }

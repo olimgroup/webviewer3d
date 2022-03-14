@@ -56,7 +56,7 @@ export class CharacterComponent extends pc.ScriptType {
   chat(msg: string) {
     const ch = this.entity as Character;
     const text = ch._text as pc.ElementComponent;
-    text.fontAsset = ch.fontAsset!;
+    //text.fontAsset = ch.fontAsset!;
     text.text = msg;
     console.log(text, msg, this);
     this._chatMsgTime = 4;
@@ -134,7 +134,7 @@ export class Character extends pc.Entity {
     this._text = text.addComponent("element", {
       pivot: new pc.Vec2(0.5, 0.5),
       anchor: new pc.Vec4(0.5, 0.5, 0.5, 0.5),
-      fontAsset: this.fontAsset,
+      fontAsset: -1,
       fontSize: 18,
       text: 'hi',
       width: 200,
