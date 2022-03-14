@@ -3,6 +3,7 @@ import * as pc from "playcanvas";
 export interface FlyCamera {
   speed: number;
   fastSpeed: number;
+  mouseSensitivity: number;
   mode: number;
   ex: number;
   ey: number;
@@ -101,6 +102,11 @@ FlyCamera.attributes.add('speed', {
 FlyCamera.attributes.add('fastSpeed', {
   type: 'number',
   default: 20
+});
+
+FlyCamera.attributes.add('mouseSensitivity', {
+  type: 'number',
+  default: 10
 });
 
 FlyCamera.attributes.add('mode', {

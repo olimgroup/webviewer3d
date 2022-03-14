@@ -6,14 +6,20 @@ import ColorPalette from './components/ColorPalette';
 function App() {
   const viewer = new PlayCanvasViewer();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const webcamRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     if (!canvasRef.current) {
       return;
     }
+    if (!inputRef.current) {
+      return;
+    }
 
-    viewer.Initialize(canvasRef.current);
+    viewer.initialize(canvasRef.current);
+    viewer.setInputElement(inputRef.current);
+
     viewer.loadGltf("../../assets/couch/couch.gltf", "couch.gltf");
     
   }, []);
@@ -22,6 +28,9 @@ function App() {
     <div>
       <WebcamContainer></WebcamContainer>
       <canvas ref={canvasRef} />
+      <div>
+        <input ref={inputRef} type="text" />
+      </div>
       <ColorPalette viewer={viewer}/>
     </div>    
   );

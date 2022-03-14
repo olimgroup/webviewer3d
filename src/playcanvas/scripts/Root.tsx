@@ -16,11 +16,11 @@ class Root extends pc.ScriptType {
     this.CameraComponent = this.initCamera();
     this.entity.addChild(this.CameraComponent.entity);
 
-    //this.LightComponent = this.initLight();
-    //this.entity.addChild(this.LightComponent.entity);
+    this.LightComponent = this.initLight();
+    this.entity.addChild(this.LightComponent.entity);
 
-    // const rootEntity = this.initEntities();
-    // this.entity.addChild(rootEntity);
+    const rootEntity = this.initEntities();
+    this.entity.addChild(rootEntity);
   }
 
   public initEntities(): pc.Entity {

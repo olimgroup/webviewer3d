@@ -23,7 +23,7 @@ function createToken(req) {
 }
 
 function handleAccessTokenRequest(req, res) {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header('Access-Control-Allow-Origin', '*');
   res.set('Content-Type', 'text/plain');
   res.send(createToken(req));
 }
@@ -37,21 +37,42 @@ let server = app.listen(PORT, () => {
 });
 
 const clients = [];
-let wss = new WebSocketServer({noServer: true, path: "/connect"});
+let wss = new WebSocketServer({noServer: true, path: '/connect'});
 wss.on('connection', ws => {
-  clients.push(ws);
+  const id = genID(1, 10000);
+  clients.push({
+    id: id,
+    ws: ws,
+    avatar: {}
+  });
+
+  ws.send(JSON.stringify({ type: 'handshake', id: id, value: '' }));
   ws.on('message', message => {
-    clients.forEach(client => client.send(message.toString()));
+    const obj = JSON.parse(message);
+    if(obj.type == 'world') {
+      const avatars = clients.map(function(client) {
+        return client.avatar;
+      });
+      ws.send(JSON.stringify({ type: 'world', id: 0, value: avatars}));
+    } else if (obj.type == 'join') {
+      const target = clients.find(client => { return client.id == obj.id});
+      target.avatar = obj.value;
+      clients.forEach((client)=>{
+        client.ws.send(JSON.stringify({ type: 'join', id: target.id, value: target.avatar}));
+      });
+    } else {
+      clients.forEach((client)=>{
+        client.ws.send(message.toString());
+      });
+    }
   });
   ws.on('close', message => {
-    const idx = clients.indexOf(ws);
-    clients.splice(idx, idx);
-    clients.forEach(client => {
-      client.send(JSON.stringify({ type: "leave", id: idx, value: "" }));
+    const obj = JSON.parse(message);
+    const target = clients.find(client => { client.id == obj.id});
+    if(!target) return;
+    clients.forEach((client) => {
+      client.ws.send(JSON.stringify({ type: 'leave', id: target.id, value: '' }));
     });
-  });
-  clients.forEach(client => {
-    client.send(JSON.stringify({ type: "enter", id: clients.indexOf(ws), value: "" }));
   });
 });
 
@@ -60,3 +81,7 @@ server.on('upgrade', (request, socket, head) => {
     wss.emit('connection', socket, request);
   });
 });
+
+function genID(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
