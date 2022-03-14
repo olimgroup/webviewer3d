@@ -97,7 +97,7 @@ export class Character extends pc.Entity {
     const head = new pc.Entity('head');
     const head_model = head.addComponent('model', { type: 'sphere' }) as pc.ModelComponent;
     this.addChild(head);
-    //head_model.layers = [1, 2, 3];
+    head_model.layers = [1, 2, 3];
     head.setLocalPosition(0, 0.9, 0);
     head.setLocalScale(0.2, 0.2, 0.2);
     const m = head_model.material as pc.StandardMaterial;
@@ -109,7 +109,7 @@ export class Character extends pc.Entity {
     const body = new pc.Entity('body');
     const body_model = body.addComponent('model', { type: 'cone' }) as pc.ModelComponent;
     this.addChild(body);
-    ///body_model.layers = [1, 2, 3];
+    body_model.layers = [1, 2, 3];
     body.setLocalPosition(0, 0.4, 0);
     body.setLocalScale(0.3, 0.8, 0.3);
     body.setLocalEulerAngles(180, 0, 0);

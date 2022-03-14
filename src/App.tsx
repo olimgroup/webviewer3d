@@ -20,7 +20,7 @@ function App() {
     viewer.initialize(canvasRef.current);
     viewer.setInputElement(inputRef.current);
 
-    viewer.loadGltf("../../assets/couch/couch.gltf", "couch.gltf");
+    viewer.loadGltf("../../assets/ZE152_01_A2/ZE152_01_A2.gltf", "ZE152_01_A2.gltf");
     
   }, []);
 

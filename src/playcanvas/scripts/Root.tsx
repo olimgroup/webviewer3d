@@ -19,8 +19,8 @@ class Root extends pc.ScriptType {
     this.LightComponent = this.initLight();
     this.entity.addChild(this.LightComponent.entity);
 
-    const rootEntity = this.initEntities();
-    this.entity.addChild(rootEntity);
+    // const rootEntity = this.initEntities();
+    // this.entity.addChild(rootEntity);
   }
 
   public initEntities(): pc.Entity {
@@ -45,6 +45,7 @@ class Root extends pc.ScriptType {
   public initLight(): pc.LightComponent {
     const entity = new pc.Entity('light');
     const component = entity.addComponent('light') as pc.LightComponent;
+    component.layers = [1, 2, 3];
     entity.setEulerAngles(45, 45, 0);
     return component;
   }
