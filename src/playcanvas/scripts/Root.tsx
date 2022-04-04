@@ -35,8 +35,9 @@ class Root extends pc.ScriptType {
     const entity = new pc.Entity('camera');
     const component = entity.addComponent('camera') as pc.CameraComponent;
     component.clearColor = new pc.Color(0.12, 0.11, 0.15);
-    component.entity.setPosition(0, 10, 15);
+    component.entity.setPosition(-4.23, 2.5, 3.34);
     component.entity.setLocalEulerAngles(-35, 0, 0);
+    component.entity.setLocalRotation(-0.233, -0.2, -0.05, 0.95);
     const script = entity.addComponent('script') as pc.ScriptComponent;
     script.create(FlyCamera);
     return component;
@@ -54,16 +55,19 @@ class Root extends pc.ScriptType {
   }
 
   public changeFloorColor(payload:{ r:number, g:number, b:number }) {
-    const floor = this.entity.findByName("Floor") as pc.Entity;
-    if (floor) {
-      const sm = floor.model?.model.meshInstances[0].material as pc.StandardMaterial;
-      if (sm) {
-        sm.diffuse.r = payload.r;
-        sm.diffuse.g = payload.g;
-        sm.diffuse.b = payload.b;
-        sm.update();
+    const root = this.entity.findByName('ZE152_01_A2');
+    root.children.forEach((child)=> {
+      if (child.name.includes("SM_Floor")) {
+        const target = child as pc.Entity;
+        const sm = target.model?.model.meshInstances[0].material as pc.StandardMaterial;
+        if (sm) {
+          sm.diffuse.r = payload.r;
+          sm.diffuse.g = payload.g;
+          sm.diffuse.b = payload.b;
+          sm.update();
+        }
       }
-    }
+    })
   }
 
   public broadcastEvent(type: string, arg0: any = null, arg1: any = null) {
